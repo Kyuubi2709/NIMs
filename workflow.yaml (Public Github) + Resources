@@ -122,7 +122,7 @@ spec:
       command: [sh]
       source: |
         #!/bin/sh
-        cd /workspace/overlays/cosmos-predict1-7b
+        cd /workspace/overlays/cosmos-predict1-7b-2
         
         # Replace placeholders in deployment-patch.yaml with actual values
         sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
@@ -138,8 +138,20 @@ spec:
         
         # Generate the manifests using kustomize
         kustomize build . -o /workspace/modified
+
         ls /workspace/modified
     outputs:
       artifacts:
         - name: manifests
           path: /workspace/modified
+
+  - name: apply-kubectl
+    inputs:
+      artifacts:
+        - name: manifests
+          path: /workspace/modified
+    container:
+      image: bitnami/kubectl:1.21 
+      command: [sh, -c]
+      args: ["kubectl apply -f /workspace/modified"]
+
