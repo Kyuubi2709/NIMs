@@ -127,6 +127,7 @@ spec:
         # Replace placeholders in deployment-patch.yaml with actual values
         sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
         sed -i "s/\DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" deployment-patch.yaml
+        sed -i "s/DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" service-patch.yaml 
         sed -i "s/\GPU_LIMIT/nvidia.com\/gpu:{{inputs.parameters.gpuLimit}}/g" deployment-patch.yaml
         sed -i "s/\CPU_LIMIT/{{inputs.parameters.cpuLimit}}/g" deployment-patch.yaml
         sed -i "s/\MEMORY_LIMIT/{{inputs.parameters.memoryLimit}}/g" deployment-patch.yaml
