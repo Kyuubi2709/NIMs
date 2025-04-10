@@ -22,11 +22,11 @@ spec:
       - name: gpuLimit
         value: "1"  # GPU limit
       - name: cpuRequest
-        value: "1"  # CPU request
+        value: "2"  # CPU request
       - name: memoryRequest
-        value: "2Gi"  # Memory request
+        value: "4Gi"  # Memory request
       - name: storageRequest
-        value: "5Gi"  # Storage request
+        value: "10Gi"  # Storage request
       - name: gpuRequest
         value: "1"  # GPU request
   templates:
