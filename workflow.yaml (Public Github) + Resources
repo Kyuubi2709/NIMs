@@ -97,11 +97,11 @@ spec:
       # Replace placeholders in deployment-patch.yaml with actual values
       sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
       sed -i "s/\DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" deployment-patch.yaml
-      sed -i "s/\GPU_LIMIT/{{inputs.parameters.gpuLimit}}/g" deployment-patch.yaml
+      sed -i "s/\GPU_LIMIT/nvidia.com\/gpu:{{inputs.parameters.gpuLimit}}/g" deployment-patch.yaml # Replace with nvidia.com/gpu format
       sed -i "s/\CPU_LIMIT/{{inputs.parameters.cpuLimit}}/g" deployment-patch.yaml
       sed -i "s/\MEMORY_LIMIT/{{inputs.parameters.memoryLimit}}/g" deployment-patch.yaml
       sed -i "s/\STORAGE_LIMIT/{{inputs.parameters.storageLimit}}/g" deployment-patch.yaml
-      sed -i "s/\GPU_REQUEST/{{inputs.parameters.gpuRequest}}/g" deployment-patch.yaml
+      sed -i "s/\GPU_REQUEST/nvidia.com\/gpu:{{inputs.parameters.gpuRequest}}/g" deployment-patch.yaml # Replace with nvidia.com/gpu format
       sed -i "s/\CPU_REQUEST/{{inputs.parameters.cpuRequest}}/g" deployment-patch.yaml
       sed -i "s/\MEMORY_REQUEST/{{inputs.parameters.memoryRequest}}/g" deployment-patch.yaml
       sed -i "s/\STORAGE_REQUEST/{{inputs.parameters.storageRequest}}/g" deployment-patch.yaml
