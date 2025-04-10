@@ -29,7 +29,6 @@ spec:
         value: "5Gi"  # Storage request
       - name: gpuRequest
         value: "1"  # GPU request
-
   templates:
   - name: main
     steps:
@@ -86,8 +85,17 @@ spec:
       image: alpine/git
       command: [sh, -c]
       args: [
-        "git clone --branch {{inputs.parameters.repoBranch}} {{inputs.parameters.repoUrl}} /workspace && ls /workspace"
+        "git clone --branch {{inputs.parameters.repoBranch}} {{inputs.parameters.repoUrl}} /workspace && \
+        ls /workspace"
       ]
+    #   volumeMounts:
+    #     - name: ssh-key
+    #       mountPath: /secret
+    #       readOnly: true
+    # volumes:
+    #   - name: ssh-key
+    #     secret:
+    #       secretName: git-ssh-key
     outputs:
       artifacts:
         - name: repo
