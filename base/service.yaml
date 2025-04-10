@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nim-cosmos-service
+  name: fluxai-cloudflare-service
 spec:
-  type: ClusterIP
   selector:
-    app: nim-cosmos
+    deploymentInformation: fluxai-cloudflare
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 8000
+    port: 8080 # Port on the service
+    targetPort: 8080 # Port on the pods
+  type: NodePort
