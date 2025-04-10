@@ -5,16 +5,31 @@ metadata:
 spec:
   serviceAccountName: batch-job-sa
   nodeSelector:
-    kubernetes.io/hostname: "" # This is the node the workflow will run on. This will be provided by FluxEdge dynamically
+    kubernetes.io/hostname: ""  # Node will be dynamically set by FluxEdge
   entrypoint: main
   arguments:
     parameters:
       - name: repoUrl
-        value: "https://github.com/Kyuubi2709/NIMs.git" # Put in your repo URL
+        value: "https://github.com/Kyuubi2709/NIMs.git"  # Repo URL
       - name: repoBranch
-        value: "main" # Put in the branch you want to deploy
-      # Node Selector will be dynamically added by FluxEdge
-      # Deployment Information will be dynmically added by FluxEdge
+        value: "main"  # Branch to deploy
+      - name: cpuLimit
+        value: "2"  # CPU limit (in cores)
+      - name: memoryLimit
+        value: "4Gi"  # Memory limit
+      - name: storageLimit
+        value: "10Gi"  # Storage limit
+      - name: gpuLimit
+        value: "1"  # GPU limit
+      - name: cpuRequest
+        value: "1"  # CPU request
+      - name: memoryRequest
+        value: "2Gi"  # Memory request
+      - name: storageRequest
+        value: "5Gi"  # Storage request
+      - name: gpuRequest
+        value: "1"  # GPU request
+
   templates:
   - name: main
     steps:
@@ -35,6 +50,22 @@ spec:
                 value: "{{workflow.parameters.nodeSelector}}"
               - name: deploymentInformation
                 value: "{{workflow.parameters.deploymentInformation}}"
+              - name: cpuLimit
+                value: "{{workflow.parameters.cpuLimit}}"
+              - name: memoryLimit
+                value: "{{workflow.parameters.memoryLimit}}"
+              - name: storageLimit
+                value: "{{workflow.parameters.storageLimit}}"
+              - name: gpuLimit
+                value: "{{workflow.parameters.gpuLimit}}"
+              - name: cpuRequest
+                value: "{{workflow.parameters.cpuRequest}}"
+              - name: memoryRequest
+                value: "{{workflow.parameters.memoryRequest}}"
+              - name: storageRequest
+                value: "{{workflow.parameters.storageRequest}}"
+              - name: gpuRequest
+                value: "{{workflow.parameters.gpuRequest}}"
             artifacts:
               - name: repo
                 from: "{{steps.clone-repo.outputs.artifacts.repo}}"
@@ -55,62 +86,52 @@ spec:
       image: alpine/git
       command: [sh, -c]
       args: [
-        "git clone --branch {{inputs.parameters.repoBranch}} {{inputs.parameters.repoUrl}} /workspace && \
-        ls /workspace"
+        "git clone --branch {{inputs.parameters.repoBranch}} {{inputs.parameters.repoUrl}} /workspace && ls /workspace"
       ]
-    #   volumeMounts:
-    #     - name: ssh-key
-    #       mountPath: /secret
-    #       readOnly: true
-    # volumes:
-    #   - name: ssh-key
-    #     secret:
-    #       secretName: git-ssh-key
     outputs:
       artifacts:
         - name: repo
           path: /workspace
 
-- name: kustomize-build
-  inputs:
-    parameters:
-      - name: nodeSelector
-      - name: deploymentInformation
-      - name: cpuLimit
-      - name: memoryLimit
-      - name: storageLimit
-      - name: gpuLimit
-      - name: cpuRequest
-      - name: memoryRequest
-      - name: storageRequest
-      - name: gpuRequest
-    artifacts:
-      - name: repo
-        path: /workspace
-  script:
-    image: line/kubectl-kustomize
-    command: [sh]
-    source: |
-      #!/bin/sh
-      cd /workspace/overlays/cosmos-predict1-7b
-      
-      # Replace placeholders in deployment-patch.yaml with actual values
-      sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
-      sed -i "s/\DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" deployment-patch.yaml
-      sed -i "s/\GPU_LIMIT/nvidia.com\/gpu:{{inputs.parameters.gpuLimit}}/g" deployment-patch.yaml # Replace with nvidia.com/gpu format
-      sed -i "s/\CPU_LIMIT/{{inputs.parameters.cpuLimit}}/g" deployment-patch.yaml
-      sed -i "s/\MEMORY_LIMIT/{{inputs.parameters.memoryLimit}}/g" deployment-patch.yaml
-      sed -i "s/\STORAGE_LIMIT/{{inputs.parameters.storageLimit}}/g" deployment-patch.yaml
-      sed -i "s/\GPU_REQUEST/nvidia.com\/gpu:{{inputs.parameters.gpuRequest}}/g" deployment-patch.yaml # Replace with nvidia.com/gpu format
-      sed -i "s/\CPU_REQUEST/{{inputs.parameters.cpuRequest}}/g" deployment-patch.yaml
-      sed -i "s/\MEMORY_REQUEST/{{inputs.parameters.memoryRequest}}/g" deployment-patch.yaml
-      sed -i "s/\STORAGE_REQUEST/{{inputs.parameters.storageRequest}}/g" deployment-patch.yaml
-
-      # Generate the manifests using kustomize
-      kustomize build . -o /workspace/modified
-
-      ls /workspace/modified
-  outputs:
-    artifacts:
-      - name: manifests
-        path: /workspace/modified
+  - name: kustomize-build
+    inputs:
+      parameters:
+        - name: nodeSelector
+        - name: deploymentInformation
+        - name: cpuLimit
+        - name: memoryLimit
+        - name: storageLimit
+        - name: gpuLimit
+        - name: cpuRequest
+        - name: memoryRequest
+        - name: storageRequest
+        - name: gpuRequest
+      artifacts:
+        - name: repo
+          path: /workspace
+    script:
+      image: line/kubectl-kustomize
+      command: [sh]
+      source: |
+        #!/bin/sh
+        cd /workspace/overlays/cosmos-predict1-7b
+        
+        # Replace placeholders in deployment-patch.yaml with actual values
+        sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
+        sed -i "s/\DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" deployment-patch.yaml
+        sed -i "s/\GPU_LIMIT/nvidia.com\/gpu:{{inputs.parameters.gpuLimit}}/g" deployment-patch.yaml
+        sed -i "s/\CPU_LIMIT/{{inputs.parameters.cpuLimit}}/g" deployment-patch.yaml
+        sed -i "s/\MEMORY_LIMIT/{{inputs.parameters.memoryLimit}}/g" deployment-patch.yaml
+        sed -i "s/\STORAGE_LIMIT/{{inputs.parameters.storageLimit}}/g" deployment-patch.yaml
+        sed -i "s/\GPU_REQUEST/nvidia.com\/gpu:{{inputs.parameters.gpuRequest}}/g" deployment-patch.yaml
+        sed -i "s/\CPU_REQUEST/{{inputs.parameters.cpuRequest}}/g" deployment-patch.yaml
+        sed -i "s/\MEMORY_REQUEST/{{inputs.parameters.memoryRequest}}/g" deployment-patch.yaml
+        sed -i "s/\STORAGE_REQUEST/{{inputs.parameters.storageRequest}}/g" deployment-patch.yaml
+        
+        # Generate the manifests using kustomize
+        kustomize build . -o /workspace/modified
+        ls /workspace/modified
+    outputs:
+      artifacts:
+        - name: manifests
+          path: /workspace/modified
