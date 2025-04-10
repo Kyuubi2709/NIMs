@@ -11,7 +11,7 @@ spec:
   arguments:
     parameters:
       - name: repoUrl
-        value: "https://github.com/Kyuubi2709/NIMs.git"  # Repo URL
+        value: "https://github.com/Kyuubi2709/NIMs-Resources-Working.git"  # Repo URL
       - name: repoBranch
         value: "main"  # Branch to deploy
       - name: cpuLimit
