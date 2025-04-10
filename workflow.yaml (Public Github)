@@ -11,7 +11,7 @@ spec:
   arguments:
     parameters:
       - name: repoUrl
-        value: "https://github.com/Kyuubi2709/fluxedge7.git" # Put in your repo URL
+        value: "https://github.com/Kyuubi2709/NIMs.git" # Put in your repo URL
       - name: repoBranch
         value: "main" # Put in the branch you want to deploy
       # Node Selector will be dynamically added by FluxEdge
