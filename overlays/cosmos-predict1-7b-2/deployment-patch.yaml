@@ -36,5 +36,5 @@ spec:
       - name: nim-cache
         emptyDir: {}
       imagePullSecrets:
-      - name: secret-nvidia
+      - name: sercret-nvidia
       restartPolicy: Always
