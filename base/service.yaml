@@ -6,7 +6,8 @@ spec:
   selector:
     deploymentInformation: value-service
   ports:
-  - protocol: TCP
-    port: 8080 # Port on the service
-    targetPort: 8080 # Port on the pods
-  type: NodePort
+    - name: tcp
+      port: 80  # Port exposed by the service
+      protocol: TCP
+      targetPort: 8000  # Port on the pod
+  type: ClusterIP
