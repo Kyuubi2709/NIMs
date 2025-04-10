@@ -85,7 +85,7 @@ spec:
       command: [sh]
       source: |
         #!/bin/sh
-        cd /workspace/overlays/na1
+        cd /workspace/overlays/cosmos-predict1-7b
         # Replace placeholders in kustomization.yaml with actual values
         sed -i "s/\NODE_SELECTOR/{{inputs.parameters.nodeSelector}}/g" deployment-patch.yaml
         sed -i "s/\DEPLOYMENT_INFORMATION/{{inputs.parameters.deploymentInformation}}/g" deployment-patch.yaml 
